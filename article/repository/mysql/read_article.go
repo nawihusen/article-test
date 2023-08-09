@@ -24,30 +24,31 @@ func (db *mysqlArticleRepository) GetArticles(ctx context.Context, author, title
 	if author != "" || title != "" || body != "" {
 		query += ` WHERE `
 	}
-	
 
-	if author != ""{
+	if author != "" {
 		query += ` author LIKE %?% `
 		params = append(params, author)
 	}
-	
-	if title != ""{
-		if author != ""{
+
+	if title != "" {
+		if author != "" {
 			query += ` AND `
 		}
 
 		query += ` title LIKE %?% `
 		params = append(params, title)
 	}
-	
-	if body != ""{
-		if author !="" || title != ""{
+
+	if body != "" {
+		if author != "" || title != "" {
 			query += ` AND `
 		}
 
 		query += ` body LIKE %?% `
 		params = append(params, body)
 	}
+
+	query += " ORDER BY created ASC"
 
 	rows, err := db.Conn.QueryContext(ctx, query)
 	if err != nil {

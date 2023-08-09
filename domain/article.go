@@ -27,4 +27,6 @@ type ArticleRepository interface {
 type ArticleRedisRepository interface {
 	PostArticleToRedis(ctx context.Context, article []Article) (err error)
 	GetArticles(ctx context.Context, author, title string) (articles []Article, err error)
+	ClearAuthorArticle(ctx context.Context, author string) (err error)
+	ClearAll(ctx context.Context) (err error)
 }

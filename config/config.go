@@ -15,18 +15,9 @@ import (
 
 // Config main structure
 type Config struct {
-	Server            Server        `yaml:"server"`
-	MySQL             MySQL         `yaml:"mysql"`
-	Redis             Redis         `yaml:"redis"`
-	GRPC              GRPC          `yaml:"grpc"`
-	Middleware        Middleware    `yaml:"middleware"`
-	HostURL           string        `yaml:"host_url"`
-	X_API_KEY         string        `yaml:"x_api_key"`
-	AuthorizationURL  string        `yaml:"authorization_url"`
-	StaticPath        string        `yaml:"static_path"`
-	APISpec           bool          `yaml:"api_spec"`
-	DefaultLimitQuery int64         `yaml:"default_limit_query"`
-	AccessControl     AccessControl `yaml:"access_control"`
+	Server Server `yaml:"server"`
+	MySQL  MySQL  `yaml:"mysql"`
+	Redis  Redis  `yaml:"redis"`
 }
 
 // Server is server related config
@@ -124,41 +115,10 @@ type Redis struct {
 	Database uint64 `yaml:"database"`
 }
 
-// GRPC is GRPC client related config
-type GRPC struct {
-	SaksiService    HostPort      `yaml:"saksi_service"`
-	AuthService     HostPort      `yaml:"auth_service"`
-	MemberService   HostPort      `yaml:"member_service"`
-	Init            int           `yaml:"init"`
-	Capacity        int           `yaml:"capacity"`
-	IdleDuration    time.Duration `yaml:"idle_duration"`
-	MaxLifeDuration time.Duration `yaml:"max_life_duration"`
-}
-
-// AccessControl is GRPC using Casbin
-type AccessControl struct {
-	Host                string `yaml:"host"`
-	Port                string `yaml:"port"`
-	TenantServiceName   string `yaml:"tenant_service_name"`
-	EnforceHandler      int32  `yaml:"enforce_handler"`
-	TenantAdminRoleName string `yaml:"tenant_admin_role_name"`
-}
-
-// AuthService is GRPC config for AuthService
-type HostPort struct {
-	Host string `yaml:"host"`
-	Port string `yaml:"port"`
-}
-
-// Middleware is middleware related config
-type Middleware struct {
-	AllowsOrigin string `yaml:"allows_origin"`
-}
-
 // Default config
 var defaultConfig = &Config{
 	Server: Server{
-		Port:          "8666",
+		Port:          "8888",
 		Prefork:       false,
 		StrictRouting: false,
 		CaseSensitive: false,
@@ -170,13 +130,12 @@ var defaultConfig = &Config{
 			Idle:  120,
 		},
 		LogLevel: "debug",
-		GRPCPort: "58666",
 		BasePath: "",
 	},
 	MySQL: MySQL{
 		Host:        "localhost",
 		Port:        "3306",
-		Database:    "dapil",
+		Database:    "article",
 		User:        "root",
 		Password:    "",
 		PathMigrate: "file://db/migration",
@@ -189,40 +148,6 @@ var defaultConfig = &Config{
 		Password:      "",
 		Database:      0,
 	},
-	GRPC: GRPC{
-		SaksiService: HostPort{
-			Host: "localhost",
-			Port: "58555",
-		},
-		AuthService: HostPort{
-			Host: "localhost",
-			Port: "58888",
-		},
-		MemberService: HostPort{
-			Host: "localhost",
-			Port: "57777",
-		},
-		Init:            5,
-		Capacity:        50,
-		IdleDuration:    60,
-		MaxLifeDuration: 60,
-	},
-	Middleware: Middleware{
-		AllowsOrigin: "*",
-	},
-	AccessControl: AccessControl{
-		Host:                "localhost",
-		Port:                "50052",
-		EnforceHandler:      0,
-		TenantServiceName:   "calegmanagement",
-		TenantAdminRoleName: "admincalegmanagement",
-	},
-	HostURL:           "http://localhost:8666",
-	StaticPath:        "/var/local/lib/service-dapil-caleg",
-	APISpec:           false,
-	DefaultLimitQuery: 100,
-	AuthorizationURL:  "http://localhost:7777/authorizationrpc",
-	X_API_KEY:         "p6S0K2STlV2TQqTOwibV4cuBox4Y8FvmpAd0H4Y2fJzNulQsGFjthc3BGoiTNXLo",
 }
 
 func lookupEnv(parent string, rt reflect.Type, rv reflect.Value) {

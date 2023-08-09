@@ -20,7 +20,12 @@ func NewArticleUsecase(articleRepo domain.ArticleRepository) domain.ArticleUseca
 }
 
 func (au *articleUsecase) PostArticle(ctx context.Context, article domain.Article) error {
+	// add article to database
 	err := au.articleRepo.PostArticle(ctx, article)
+
+	// clear author's article
+	err = au.redisRepo.ClearAuthorArticle(ctx, article.Author)
+
 	return err
 }
 

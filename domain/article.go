@@ -17,6 +17,7 @@ type Article struct {
 type ArticleUsecase interface {
 	PostArticle(ctx context.Context, article Article) (err error)
 	GetArticles(ctx context.Context, author, title, body string) (articles []Article, err error)
+	Test(ctx context.Context) (err error)
 }
 
 type ArticleRepository interface {
@@ -26,7 +27,7 @@ type ArticleRepository interface {
 
 type ArticleRedisRepository interface {
 	PostArticleToRedis(ctx context.Context, article []Article) (err error)
-	GetArticles(ctx context.Context, author, title string) (articles []Article, err error)
-	ClearAuthorArticle(ctx context.Context, author string) (err error)
+	GetArticles(ctx context.Context, title string) (articles []Article, err error)
 	ClearAll(ctx context.Context) (err error)
+	Test(ctx context.Context, article Article) (err error)
 }

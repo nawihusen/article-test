@@ -9,6 +9,7 @@ import (
 
 	_DeliveryHTTPArticle "alpha-test/article/delivery/http"
 	_RepoMySQLArticle "alpha-test/article/repository/mysql"
+	_RepoRedisArticle "alpha-test/article/repository/redis"
 	_UsecaseArticle "alpha-test/article/usecase"
 
 	"database/sql"
@@ -121,8 +122,9 @@ func main() {
 	log.Info("Redis connection established")
 
 	// Register repository & usecase
+	repoRedisArticle := _RepoRedisArticle.NewRedisArticleRepository(dbRedis)
 	repoMySQLArticle := _RepoMySQLArticle.NewMySQLArticleRepository(dbConn)
-	usecaseArticle := _UsecaseArticle.NewArticleUsecase(repoMySQLArticle)
+	usecaseArticle := _UsecaseArticle.NewArticleUsecase(repoMySQLArticle, repoRedisArticle)
 
 	// Initialize HTTP web framework
 	app := fiber.New(fiber.Config{

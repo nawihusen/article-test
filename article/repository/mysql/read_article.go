@@ -26,7 +26,7 @@ func (db *mysqlArticleRepository) GetArticles(ctx context.Context, author, title
 	}
 
 	if author != "" {
-		query += ` author LIKE %?% `
+		query += ` author = ? `
 		params = append(params, author)
 	}
 

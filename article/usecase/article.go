@@ -3,6 +3,7 @@ package usecase
 import (
 	"alpha-test/domain"
 	"context"
+	"time"
 	// log "github.com/sirupsen/logrus"
 )
 
@@ -13,9 +14,10 @@ type articleUsecase struct {
 }
 
 // NewAccountUsecase is constructor of account usecase
-func NewArticleUsecase(articleRepo domain.ArticleRepository) domain.ArticleUsecase {
+func NewArticleUsecase(articleRepo domain.ArticleRepository, redisRepo domain.ArticleRedisRepository) domain.ArticleUsecase {
 	return &articleUsecase{
 		articleRepo: articleRepo,
+		redisRepo:   redisRepo,
 	}
 }
 
@@ -23,15 +25,15 @@ func (au *articleUsecase) PostArticle(ctx context.Context, article domain.Articl
 	// add article to database
 	err := au.articleRepo.PostArticle(ctx, article)
 
-	// clear author's article
-	err = au.redisRepo.ClearAuthorArticle(ctx, article.Author)
+	// clear chache
+	err = au.redisRepo.ClearAll(ctx)
 
 	return err
 }
 
 func (au *articleUsecase) GetArticles(ctx context.Context, author, title, body string) ([]domain.Article, error) {
 	// get from chache and return if article data exist
-	articles, err := au.redisRepo.GetArticles(ctx, author, title)
+	articles, err := au.redisRepo.GetArticles(ctx, title)
 	if err != nil {
 		return nil, err
 	}
@@ -49,4 +51,16 @@ func (au *articleUsecase) GetArticles(ctx context.Context, author, title, body s
 	err = au.redisRepo.PostArticleToRedis(ctx, articles)
 
 	return articles, err
+}
+
+func (au *articleUsecase) Test(ctx context.Context) error {
+	data := domain.Article{
+		ID:      1,
+		Author:  "author",
+		Title:   "title",
+		Body:    "body",
+		Created: time.Now(),
+	}
+	err := au.redisRepo.Test(ctx, data)
+	return err
 }

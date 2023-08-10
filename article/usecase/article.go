@@ -3,8 +3,8 @@ package usecase
 import (
 	"alpha-test/domain"
 	"context"
-	"time"
-	// log "github.com/sirupsen/logrus"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // articleUsecase is struct usecase
@@ -31,15 +31,24 @@ func (au *articleUsecase) PostArticle(ctx context.Context, article domain.Articl
 	return err
 }
 
-func (au *articleUsecase) GetArticles(ctx context.Context, author, title, body string) ([]domain.Article, error) {
+func (au *articleUsecase) GetArticles(ctx context.Context, author, title, body string) (articles []domain.Article, err error) {
 	// get from chache and return if article data exist
-	articles, err := au.redisRepo.GetArticles(ctx, title)
-	if err != nil {
-		return nil, err
+	if author == "" && body == "" {
+		articles, err = au.redisRepo.GetArticles(ctx, title)
+		if err != nil {
+			if err.Error() == "redis: nil" {
+				log.Debug("No data on redis, Go to database")
+			} else {
+				return nil, err
+			}
+		}
+
+		// return data from redis if data exist
+		if articles != nil {
+			return articles, err
+		}
 	}
-	if articles != nil {
-		return articles, err
-	}
+	// fmt.Println("test on redis <=== this should not print")
 
 	// get from database
 	articles, err = au.articleRepo.GetArticles(ctx, author, title, body)
@@ -47,20 +56,13 @@ func (au *articleUsecase) GetArticles(ctx context.Context, author, title, body s
 		return nil, err
 	}
 
-	// add to chache
+	// add one-one to chache
 	err = au.redisRepo.PostArticleToRedis(ctx, articles)
 
-	return articles, err
-}
-
-func (au *articleUsecase) Test(ctx context.Context) error {
-	data := domain.Article{
-		ID:      1,
-		Author:  "author",
-		Title:   "title",
-		Body:    "body",
-		Created: time.Now(),
+	// add all to chache when have no param
+	if author == "" && title == "" && body == "" {
+		err = au.redisRepo.PostAllToRedis(ctx, articles)
 	}
-	err := au.redisRepo.Test(ctx, data)
-	return err
+
+	return articles, err
 }

@@ -52,19 +52,10 @@ func (sh *ArticleHandler) GetArticles(c *fiber.Ctx) (err error) {
 	if err != nil {
 		log.Error(err)
 		return helper.HTTPSimpleResponse(c, fasthttp.StatusInternalServerError)
+	} else if len(response) == 0 {
+		return helper.HTTPSimpleResponse(c, fasthttp.StatusNotFound)
 	}
 
 	err = c.Status(fasthttp.StatusOK).JSON(response)
-	return
-}
-
-func (sh *ArticleHandler) Test(c *fiber.Ctx) (err error) {
-	err = sh.ArticleUsecase.Test(c.Context())
-	if err != nil {
-		log.Error(err)
-		return helper.HTTPSimpleResponse(c, fasthttp.StatusInternalServerError)
-	}
-
-	err = c.Status(fasthttp.StatusOK).JSON("response")
 	return
 }

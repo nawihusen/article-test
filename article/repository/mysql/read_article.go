@@ -4,6 +4,7 @@ import (
 	"alpha-test/domain"
 	"context"
 	"database/sql"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -20,7 +21,6 @@ func NewMySQLArticleRepository(Conn *sql.DB) domain.ArticleRepository {
 func (db *mysqlArticleRepository) GetArticles(ctx context.Context, author, title, body string) ([]domain.Article, error) {
 	query := `SELECT id, author, title, body, created FROM article`
 	var params []interface{}
-
 	if author != "" || title != "" || body != "" {
 		query += ` WHERE `
 	}
@@ -35,8 +35,7 @@ func (db *mysqlArticleRepository) GetArticles(ctx context.Context, author, title
 			query += ` AND `
 		}
 
-		query += ` title LIKE %?% `
-		params = append(params, title)
+		query += ` title LIKE "%` + title + `%" `
 	}
 
 	if body != "" {
@@ -44,13 +43,14 @@ func (db *mysqlArticleRepository) GetArticles(ctx context.Context, author, title
 			query += ` AND `
 		}
 
-		query += ` body LIKE %?% `
-		params = append(params, body)
+		query += ` body LIKE "%` + body + `%" `
 	}
 
 	query += " ORDER BY created ASC"
 
-	rows, err := db.Conn.QueryContext(ctx, query)
+	log.Debug(query)
+
+	rows, err := db.Conn.QueryContext(ctx, query, params...)
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -60,11 +60,13 @@ func (db *mysqlArticleRepository) GetArticles(ctx context.Context, author, title
 	var at []domain.Article
 	for rows.Next() {
 		var i domain.Article
-		err := rows.Scan(&i.ID, &i.Author, &i.Title, &i.Body, &i.Created)
+		var temp time.Time
+		err := rows.Scan(&i.ID, &i.Author, &i.Title, &i.Body, &temp)
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
+		i.Created = temp.Format(time.RFC3339)
 
 		at = append(at, i)
 	}

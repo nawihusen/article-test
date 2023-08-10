@@ -18,5 +18,4 @@ func RouterAPI(app *fiber.App, article domain.ArticleUsecase) {
 	// Article Management
 	path.Post("/article", articleHandler.PostArticle)
 	path.Get("/article", articleHandler.GetArticles)
-	path.Post("/test", articleHandler.Test)
 }

@@ -4,7 +4,7 @@ import (
 	"alpha-test/domain"
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -22,10 +22,6 @@ func NewRedisArticleRepository(Conn *redis.Client) domain.ArticleRedisRepository
 
 // PostArticleToRedis is a method to save an article to Redis
 func (r *redisArticleRepository) PostArticleToRedis(ctx context.Context, article []domain.Article) (err error) {
-	all, err := json.Marshal(article)
-	if err != nil {
-		return err
-	}
 	expire := time.Duration(viper.GetInt("redis.expire") * int(time.Hour))
 
 	for _, v := range article {
@@ -36,6 +32,17 @@ func (r *redisArticleRepository) PostArticleToRedis(ctx context.Context, article
 
 		_, err = pipe.Exec(ctx)
 	}
+
+	return err
+}
+
+// PostAllToRedis is a method to save an article to Redis
+func (r *redisArticleRepository) PostAllToRedis(ctx context.Context, article []domain.Article) (err error) {
+	all, err := json.Marshal(article)
+	if err != nil {
+		return err
+	}
+	expire := time.Duration(viper.GetInt("redis.expire") * int(time.Hour))
 
 	_, err = r.Conn.Set(ctx, "all", all, expire).Result()
 
@@ -57,6 +64,10 @@ func (r *redisArticleRepository) GetArticles(ctx context.Context, title string) 
 			return
 		}
 
+		if temp.ID == 0 {
+			return nil, errors.New("redis: nil")
+		}
+
 		articles = append(articles, temp)
 	} else {
 		res, err := r.Conn.Get(ctx, "all").Bytes()
@@ -73,19 +84,5 @@ func (r *redisArticleRepository) GetArticles(ctx context.Context, title string) 
 // ClearAll is a method to clear all Redis data
 func (r *redisArticleRepository) ClearAll(ctx context.Context) (err error) {
 	_, err = r.Conn.Del(ctx, "all").Result()
-	return err
-}
-
-func (r *redisArticleRepository) Test(ctx context.Context, article domain.Article) (err error) {
-	// p, err := json.Marshal(article)
-	// if err != nil {
-	// 	return err
-	// }
-
-	res, err := r.Conn.Get(ctx, article.Title).Bytes()
-	wadah := domain.Article{}
-	err = json.Unmarshal(res, &wadah)
-	fmt.Println("ini adalah hasil unmarshal", wadah)
-
 	return err
 }

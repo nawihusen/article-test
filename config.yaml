@@ -14,7 +14,7 @@ redis :
   database: 0
   expire : 24
 server :
-  port: "8888"
+  port: "8000"
   log_level: "debug"
   prefork:      false
   strict_routing: false

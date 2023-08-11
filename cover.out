@@ -1,0 +1,13 @@
+mode: set
+alpha-test/article/delivery/http/handler/article.go:20.66,23.16 3 1
+alpha-test/article/delivery/http/handler/article.go:28.2,30.16 3 1
+alpha-test/article/delivery/http/handler/article.go:35.2,36.16 2 1
+alpha-test/article/delivery/http/handler/article.go:41.2,41.52 1 1
+alpha-test/article/delivery/http/handler/article.go:23.16,26.3 2 1
+alpha-test/article/delivery/http/handler/article.go:30.16,33.3 2 1
+alpha-test/article/delivery/http/handler/article.go:36.16,39.3 2 1
+alpha-test/article/delivery/http/handler/article.go:44.72,52.16 5 1
+alpha-test/article/delivery/http/handler/article.go:59.2,60.8 2 1
+alpha-test/article/delivery/http/handler/article.go:52.16,55.3 2 1
+alpha-test/article/delivery/http/handler/article.go:55.8,55.31 1 1
+alpha-test/article/delivery/http/handler/article.go:55.31,57.3 1 1

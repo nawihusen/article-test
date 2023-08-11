@@ -1,12 +1,12 @@
 mysql : 
   port : "3306"
-  host: "172.22.160.1"
+  host: "host.docker.internal"
   database : "article"
   user : "root"
-  password : ""
+  password : "1sampai8"
   path_migrate: file:./db/migration
 redis :
-  host: "localhost"
+  host: "host.docker.internal"
   port : "6379"
   max_connection: 80
   username: ""

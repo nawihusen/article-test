@@ -24,6 +24,9 @@ func NewArticleUsecase(articleRepo domain.ArticleRepository, redisRepo domain.Ar
 func (au *articleUsecase) PostArticle(ctx context.Context, article domain.Article) error {
 	// add article to database
 	err := au.articleRepo.PostArticle(ctx, article)
+	if err != nil {
+		return err
+	}
 
 	// clear chache
 	err = au.redisRepo.ClearAll(ctx)
@@ -58,6 +61,9 @@ func (au *articleUsecase) GetArticles(ctx context.Context, author, title, body s
 
 	// add one-one to chache
 	err = au.redisRepo.PostArticleToRedis(ctx, articles)
+	if err != nil {
+		return nil, err
+	}
 
 	// add all to chache when have no param
 	if author == "" && title == "" && body == "" {

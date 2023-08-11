@@ -1,4 +1,4 @@
-package http
+package handler
 
 import (
 	"alpha-test/domain"
@@ -17,7 +17,7 @@ type ArticleHandler struct {
 	ArticleUsecase domain.ArticleUsecase
 }
 
-func (sh *ArticleHandler) PostArticle(c *fiber.Ctx) error {
+func (sh *ArticleHandler) PostArticleHandler(c *fiber.Ctx) error {
 	var input domain.Article
 	err := c.BodyParser(&input)
 	if err != nil {
@@ -41,7 +41,7 @@ func (sh *ArticleHandler) PostArticle(c *fiber.Ctx) error {
 	return c.Status(fasthttp.StatusOK).JSON("Success")
 }
 
-func (sh *ArticleHandler) GetArticles(c *fiber.Ctx) (err error) {
+func (sh *ArticleHandler) GetArticlesHandler(c *fiber.Ctx) (err error) {
 	author := c.Query("author")
 
 	title := c.Query("title")
@@ -51,7 +51,7 @@ func (sh *ArticleHandler) GetArticles(c *fiber.Ctx) (err error) {
 	response, err := sh.ArticleUsecase.GetArticles(c.Context(), author, title, body)
 	if err != nil {
 		log.Error(err)
-		return helper.HTTPSimpleResponse(c, fasthttp.StatusInternalServerError)
+		return c.Status(500).SendString(fasthttp.StatusMessage(fasthttp.StatusInternalServerError))
 	} else if len(response) == 0 {
 		return helper.HTTPSimpleResponse(c, fasthttp.StatusNotFound)
 	}

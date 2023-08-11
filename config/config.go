@@ -118,7 +118,7 @@ type Redis struct {
 // Default config
 var defaultConfig = &Config{
 	Server: Server{
-		Port:          "8888",
+		Port:          "8000",
 		Prefork:       false,
 		StrictRouting: false,
 		CaseSensitive: false,
@@ -137,8 +137,8 @@ var defaultConfig = &Config{
 		Port:        "3306",
 		Database:    "article",
 		User:        "root",
-		Password:    "",
-		PathMigrate: "file://db/migration",
+		Password:    "1sampai8",
+		PathMigrate: "file:./db/migration",
 	},
 	Redis: Redis{
 		Host:          "localhost",

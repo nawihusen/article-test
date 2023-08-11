@@ -1,7 +1,7 @@
 package http
 
 import (
-	handler "alpha-test/article/delivery/http/handler"
+	"alpha-test/article/delivery/http/handler"
 	"alpha-test/domain"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,6 +16,6 @@ func RouterAPI(app *fiber.App, article domain.ArticleUsecase) {
 	path := app.Group(basePath)
 
 	// Article Management
-	path.Post("/article", articleHandler.PostArticle)
-	path.Get("/article", articleHandler.GetArticles)
+	path.Post("/article", articleHandler.PostArticleHandler)
+	path.Get("/article", articleHandler.GetArticlesHandler)
 }
